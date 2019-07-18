@@ -7,6 +7,7 @@
 
 class Spline{
 public:
+  explicit Spline() {}
   explicit Spline(std::vector<std::array<double, 2>> via_pos_vec, double start_angle, double goal_angle, double start_vel=5, double goal_vel=5)
     : via_pos_vec_(via_pos_vec),
       start_angle_(start_angle), goal_angle_(goal_angle),
