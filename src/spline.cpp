@@ -2,7 +2,7 @@
 
 std::array<double, 2> Spline::getPoint(int seg_num, double s) const
 {
-  if (seg_num < 0 or seg_num > via_pos_vec_.size() - 1) {
+  if (seg_num < 0 or seg_num > via_pos_vec_.size() - 1 - 1) {
     std::cout << "seg_num is out of range." << std::endl;
     return {-1, -1};
   }
@@ -18,7 +18,7 @@ std::array<double, 2> Spline::getPoint(int seg_num, double s) const
 
 void Spline::generateTrajectory()
 {
-  const auto seg_num = via_pos_vec_.size();
+  const auto seg_num = via_pos_vec_.size() - 1;
 
   std::array<double, 2> alpha, beta;
   alpha[0] = start_vel_ * std::cos(start_angle_);
