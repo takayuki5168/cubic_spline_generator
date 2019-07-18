@@ -1,1 +1,0 @@
-takayuki@takayuki-ThinkPad-T460s.24791:1563400226
