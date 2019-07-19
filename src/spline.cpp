@@ -104,3 +104,24 @@ void Spline::generateTrajectory()
     }
   }
 }
+
+void Spline::calcLength()
+{
+  const auto seg_num = via_pos_vec_.size() - 1;
+  length_.resize(seg_num);
+
+  for (int i = 0; i < length_.size(); i++) {
+    length_.at(i) = 0;
+    for (double s = 0; s < 1; s += 0.01) {
+      length_.at(i) += calcMinuteLength(i, s) * 0.01;
+    }
+  }
+}
+
+double Spline::calcMinuteLength(int seg_num, double s) const
+{
+  double x = b_[0][seg_num] + 2 * c_[0][seg_num] * s * s + 3 * d_[0][seg_num] * s * s;
+  double y = b_[1][seg_num] + 2 * c_[1][seg_num] * s * s + 3 * d_[1][seg_num] * s * s;
+  double l = std::sqrt(x * x + y * y);
+  return l;
+}
