@@ -16,6 +16,26 @@ std::array<double, 2> Spline::getPoint(int seg_num, double s) const
   return {x, y};
 }
 
+std::array<double, 3> Spline::getPose(int seg_num, double s) const
+{
+  if (seg_num < 0 or seg_num > via_pos_vec_.size() - 1 - 1) {
+    std::cout << "seg_num is out of range." << std::endl;
+    return {-1, -1, -1};
+  }
+  if (s < 0 or s > 1) {
+    std::cout << "s is out of range." << std::endl;
+    return {-1, -1, -1};
+  }
+  
+  double dx = b_[0][seg_num] + 2 * c_[0][seg_num] * s + 3 * d_[0][seg_num] * s * s;
+  double dy = b_[1][seg_num] + 2 * c_[1][seg_num] * s + 3 * d_[1][seg_num] * s * s;  
+    
+  double x = a_[0][seg_num] + b_[0][seg_num] * s + c_[0][seg_num] * s * s + d_[0][seg_num] * s * s * s;
+  double y = a_[1][seg_num] + b_[1][seg_num] * s + c_[1][seg_num] * s * s + d_[1][seg_num] * s * s * s;
+  double theta = std::atan2(dy, dx);
+  return {x, y, theta};
+}
+
 void Spline::generateTrajectory()
 {
   const auto seg_num = via_pos_vec_.size() - 1;
