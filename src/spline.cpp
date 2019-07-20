@@ -140,8 +140,8 @@ void Spline::calcLength()
 
 double Spline::calcMinuteLength(int seg_num, double s) const
 {
-  double x = b_[0][seg_num] + 2 * c_[0][seg_num] * s * s + 3 * d_[0][seg_num] * s * s;
-  double y = b_[1][seg_num] + 2 * c_[1][seg_num] * s * s + 3 * d_[1][seg_num] * s * s;
+  double x = b_[0][seg_num] + 2 * c_[0][seg_num] * s + 3 * d_[0][seg_num] * s * s;
+  double y = b_[1][seg_num] + 2 * c_[1][seg_num] * s + 3 * d_[1][seg_num] * s * s;
   double l = std::sqrt(x * x + y * y);
   return l;
 }
