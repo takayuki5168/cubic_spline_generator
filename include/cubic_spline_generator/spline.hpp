@@ -21,6 +21,11 @@ public:
   std::array<double, 2> getPoint(int seg_num, double s) const;
   std::array<double, 3> getPose(int seg_num, double s) const;
   double getLength(int seg_num) const { return length_.at(seg_num); }
+  double getLength() const {
+    double length_sum = 0;
+    for (int i = 0; i < getSegNum(); i++) { length_sum += length_.at(i); }
+    return length_sum;
+  }
 
 private:
   std::vector<std::array<double, 2>> via_pos_vec_;
