@@ -1,7 +1,7 @@
 #include <cubic_spline_generator/spline.hpp>
 
 int main() {
-  auto spline = Spline({{0, 0}, {2, 10}}, 0, 3, 10, 10);
+  auto spline = Spline({{0, 0}, {1, 1}}, 0, 0, 1, 1);
 
   auto seg_num = spline.getSegNum();
   std::cout << seg_num << std::endl;
