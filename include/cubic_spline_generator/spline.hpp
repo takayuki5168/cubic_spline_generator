@@ -26,6 +26,8 @@ public:
     for (int i = 0; i < getSegNum(); i++) { length_sum += length_.at(i); }
     return length_sum;
   }
+  double getLength(int seg_num, double s) const { return calcLength(seg_num, s);}
+  std::array<double, 2> convertLength_to_s(int seg_num, double s, double length) const;
 
 private:
   std::vector<std::array<double, 2>> via_pos_vec_;
@@ -40,5 +42,6 @@ private:
 
   void generateTrajectory();
   void calcLength();
+  double calcLength(int seg_num, double s) const;
   double calcMinuteLength(int seg_num, double s) const;
 };

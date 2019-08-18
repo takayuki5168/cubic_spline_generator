@@ -125,6 +125,71 @@ void Spline::generateTrajectory()
   }
 }
 
+std::array<double, 2> Spline::convertLength_to_s(int seg_num, double s, double length) const
+{
+  double delta_s = 0.01;
+  const double delta_s_rate = 0.1;
+  double accumulated_length;
+  double diff_length;
+  const double e = 0.00001; //[m]
+  bool prev_is_over_flag, cur_is_over_flag;
+
+  double des_length = getLength(seg_num, s) + length;
+  //std::cout << "init_diff_length" << des_length << std::endl;  
+
+  if (des_length < 0) {
+    if (seg_num == 0) {
+      return {0,0};
+    } else {
+      seg_num -= 1;
+      s = 1;
+      diff_length = des_length - 1;
+    }
+  } else if (des_length > getLength(seg_num)) {
+    if (seg_num == getSegNum()-1) {
+      return {double(seg_num), 1};
+    } else {
+      seg_num += 1;
+      s = 0;
+      diff_length = des_length;
+    }
+  } else {
+    diff_length = length;
+  }
+  //std::cout << "before loop" << std::endl;  
+  while(std::abs(diff_length) > e) {
+    std::cout << ""; // need to end loop  
+    //std::cout << "diff_length " << diff_length << std::endl;
+    //std::cout << "accumulated_length " << accumulated_length << std::endl;
+    //std::cout << "prev_is_over_flag: " << prev_is_over_flag << std::endl;
+    if (diff_length >= 0) {
+      if (prev_is_over_flag) delta_s *= delta_s_rate;
+      s += delta_s;
+      if (s > 1) {
+	s = 1;
+	cur_is_over_flag = true;
+      } else {
+	cur_is_over_flag = false;
+      }  
+      accumulated_length += calcMinuteLength(seg_num, s) * delta_s;
+    } else {
+      if (!prev_is_over_flag) delta_s *= delta_s_rate;
+      s -= delta_s;
+      if (s < 0) {
+	s = 0;
+	cur_is_over_flag = false;
+      } else {
+	cur_is_over_flag = true;
+      }
+      accumulated_length -= calcMinuteLength(seg_num, s) * delta_s;
+    }
+    prev_is_over_flag = cur_is_over_flag;
+    diff_length = length - accumulated_length;
+  }
+  //std::cout << "end loop" << std::endl;  
+  return {double(seg_num), s};
+}
+
 void Spline::calcLength()
 {
   const auto seg_num = via_pos_vec_.size() - 1;
@@ -136,6 +201,16 @@ void Spline::calcLength()
       length_.at(i) += calcMinuteLength(i, s) * 0.01;
     }
   }
+}
+
+double Spline::calcLength(int seg_num, double ref_s) const
+{
+  double length_sum = 0;
+  const double s_rate = 0.001; 
+  for (double s = 0; s < ref_s; s += s_rate) {
+    length_sum += calcMinuteLength(seg_num, s) * s_rate;
+  }
+  return length_sum;
 }
 
 double Spline::calcMinuteLength(int seg_num, double s) const
