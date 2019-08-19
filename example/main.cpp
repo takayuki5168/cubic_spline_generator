@@ -1,8 +1,12 @@
 #include <cubic_spline_generator/spline.hpp>
 
 int main() {
-  auto spline = Spline({{0, 0}, {1, 1}}, 0, 0, 1, 1);
-
+  auto spline = Spline({{0, 0}, {1, 1}}, 0, 1, 1, 1);
+  
+  auto seg_s = spline.moveLength(0, 0, 1.4);
+  auto pose = spline.getPose(seg_s.first, seg_s.second);
+  std::cout << pose[0] << " " << pose[1] << " " << pose[2] << std::endl;
+  /*
   auto seg_num = spline.getSegNum();
   std::cout << seg_num << std::endl;
   for (int i = 0; i < seg_num; i++) {
@@ -11,6 +15,7 @@ int main() {
       std::cout << pose[0] << " " << pose[1] << " " << pose[2] << std::endl;
     }
   }
+  */
   return 0;
 }
 

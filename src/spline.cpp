@@ -125,6 +125,37 @@ void Spline::generateTrajectory()
   }
 }
 
+std::pair<int, double> Spline::moveLength(int seg_num, double s, double length) const
+{
+  double all_length = calcLength(seg_num, s) + length;
+    
+  double ref_seg_num = -1, ref_length;
+  double sum_length = 0, previous_sum_length = 0;
+  for (int i = 0; i < getSegNum(); i++) {
+    sum_length += calcLength(i, 1);
+    if (sum_length > all_length) {
+      ref_seg_num = i;
+      ref_length = all_length - previous_sum_length;
+      break;
+    }
+    previous_sum_length = sum_length;
+  }
+  if (ref_seg_num < 0) { return {getSegNum() - 1, 1}; }
+
+  // ref_seg_numのref_lengthであるsを探索
+  double low_s = 0.0, high_s = 1.0;
+  while (high_s - low_s > 1e-5) {
+    double next_s = (low_s + high_s) / 2;
+    if (calcLength(ref_seg_num, next_s) < length) {
+      low_s = next_s;
+    } else {
+      high_s = next_s;
+    }
+  }
+
+  return {ref_seg_num, (high_s + low_s) / 2};
+}
+
 std::array<double, 2> Spline::convertLength_to_s(int seg_num, double s, double length) const
 {
   double delta_s = 0.01;

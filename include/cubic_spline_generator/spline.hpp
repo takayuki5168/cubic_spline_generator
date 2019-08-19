@@ -28,7 +28,7 @@ public:
   }
   double getLength(int seg_num, double s) const { return calcLength(seg_num, s);}
   std::array<double, 2> convertLength_to_s(int seg_num, double s, double length) const;
-
+  std::pair<int, double> moveLength(int seg_num, double s, double length) const;
 private:
   std::vector<std::array<double, 2>> via_pos_vec_;
   double start_angle_, goal_angle_;
