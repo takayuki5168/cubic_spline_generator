@@ -128,6 +128,7 @@ void Spline::generateTrajectory()
 std::pair<int, double> Spline::moveLength(int seg_num, double s, double length) const
 {
   double all_length = calcLength(seg_num, s) + length;
+  if (all_length < 0) { return {0, 0}; }
     
   double ref_seg_num = -1, ref_length;
   double sum_length = 0, previous_sum_length = 0;
