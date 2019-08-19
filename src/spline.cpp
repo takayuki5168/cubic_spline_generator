@@ -160,12 +160,10 @@ std::pair<int, double> Spline::moveLength(int seg_num, double s, double length) 
 std::array<double, 2> Spline::convertLength_to_s(int seg_num, double s, double length) const
 {
   double delta_s = 0.01;
-  const double delta_s_rate = 0.1;
+  const double delta_s_rate = 0.8;
   double accumulated_length;
   double diff_length;
-  const double e = 0.00001; //[m]
-  bool prev_is_over_flag, cur_is_over_flag;
-
+  const double e = 0.005; //[m]
   double des_length = getLength(seg_num, s) + length;
   //std::cout << "init_diff_length" << des_length << std::endl;  
 
@@ -188,35 +186,44 @@ std::array<double, 2> Spline::convertLength_to_s(int seg_num, double s, double l
   } else {
     diff_length = length;
   }
-  //std::cout << "before loop" << std::endl;  
+  //std::cout << "before loop" << std::endl;
+  
+  bool is_prev_over_flag, is_cur_over_flag;
   while(std::abs(diff_length) > e) {
-    std::cout << ""; // need to end loop  
     //std::cout << "diff_length " << diff_length << std::endl;
     //std::cout << "accumulated_length " << accumulated_length << std::endl;
-    //std::cout << "prev_is_over_flag: " << prev_is_over_flag << std::endl;
-    if (diff_length >= 0) {
-      if (prev_is_over_flag) delta_s *= delta_s_rate;
-      s += delta_s;
-      if (s > 1) {
-	s = 1;
-	cur_is_over_flag = true;
-      } else {
-	cur_is_over_flag = false;
-      }  
-      accumulated_length += calcMinuteLength(seg_num, s) * delta_s;
-    } else {
-      if (!prev_is_over_flag) delta_s *= delta_s_rate;
-      s -= delta_s;
-      if (s < 0) {
-	s = 0;
-	cur_is_over_flag = false;
-      } else {
-	cur_is_over_flag = true;
+    //std::cout << "s: " << s << std::endl;
+    if (diff_length > 0) {
+      is_cur_over_flag = false;
+      while (s + delta_s > 1) {
+	//std::cout << "s + delta_s" << s + delta_s << std::endl;  
+	//std::cout << "delta_s" << delta_s << std::endl;  
+	delta_s *= delta_s_rate;
       }
-      accumulated_length -= calcMinuteLength(seg_num, s) * delta_s;
+      //std::cout << "last (s + delta_s)" << s + delta_s << std::endl;  
+      if (s + delta_s == 1) {
+	break;
+      } else if (s + delta_s < 1) {
+	if (is_prev_over_flag) delta_s *= delta_s_rate;
+	s += delta_s;
+	accumulated_length += calcMinuteLength(seg_num, s) * delta_s;
+	//std::cout << "minuteLength: " << calcMinuteLength(seg_num, s) * delta_s  << std::endl;
+      }
+    } else {
+      is_cur_over_flag = true;
+      while (s - delta_s < 0) { 
+	delta_s *= delta_s_rate;
+      }
+      if (s == 0) {
+	break;
+      } else if (s - delta_s > 0) {
+	if (!is_prev_over_flag) delta_s *= delta_s_rate;
+	s -= delta_s;
+	accumulated_length -= calcMinuteLength(seg_num, s) * delta_s;
+      }
     }
-    prev_is_over_flag = cur_is_over_flag;
     diff_length = length - accumulated_length;
+    is_prev_over_flag = is_cur_over_flag;
   }
   //std::cout << "end loop" << std::endl;  
   return {double(seg_num), s};
@@ -237,8 +244,11 @@ void Spline::calcLength()
 
 double Spline::calcLength(int seg_num, double ref_s) const
 {
+  if (ref_s == 0) {
+    return 0;
+  }
   double length_sum = 0;
-  const double s_rate = 0.001; 
+  double s_rate = ref_s * 0.001; 
   for (double s = 0; s < ref_s; s += s_rate) {
     length_sum += calcMinuteLength(seg_num, s) * s_rate;
   }
