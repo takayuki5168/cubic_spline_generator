@@ -147,7 +147,7 @@ std::pair<int, double> Spline::moveLength(int seg_num, double s, double length) 
   double low_s = 0.0, high_s = 1.0;
   while (high_s - low_s > 1e-5) {
     double next_s = (low_s + high_s) / 2;
-    if (calcLength(ref_seg_num, next_s) < length) {
+    if (calcLength(ref_seg_num, next_s) < ref_length) {
       low_s = next_s;
     } else {
       high_s = next_s;
