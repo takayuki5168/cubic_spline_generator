@@ -29,11 +29,13 @@ public:
   double getLength(int seg_num, double s) const { return calcLength(seg_num, s);}
   std::array<double, 2> convertLength_to_s(int seg_num, double s, double length) const;
   std::pair<int, double> moveLength(int seg_num, double s, double length) const;
+  std::pair<int, double> calcNearest(std::array<double, 2> cur_point, int cur_seg_num, double cur_s) const;
+
 private:
   std::vector<std::array<double, 2>> via_pos_vec_;
   double start_angle_, goal_angle_;
   double start_vel_, goal_vel_;
-  
+
   std::array<std::vector<double>, 2> a_;
   std::array<std::vector<double>, 2> b_;
   std::array<std::vector<double>, 2> c_;
